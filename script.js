@@ -2,7 +2,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const listItems = document.getElementById("list-items");
     const newItemInput = document.getElementById("new-item");
     const userInput = document.getElementById("user");
-    const newPrice = document.getElementById("price")
 
     loadStoredItems();
 
@@ -12,11 +11,21 @@ document.addEventListener("DOMContentLoaded", () => {
         storedItems.forEach(item => {
             const listItem = document.createElement("li");
             listItem.innerHTML = `
-                <span>${item.name}</span>
-                <span>${item.user}</span>
-                <button onclick="markItem(this)">Mark</button>
-                <span>${item.price}</span>
+                <div class="container-2" data-testid="container-2">
+                    <div><b>${item.name}</b></div>
+                    <div class="container-3" data-testid="container-3">
+                        <div>${item.user}</div>
+                        <button onclick="markItem(this)">Mark</button>
+                    </div>
+                </div>
+                <div id="add-price">
+                    <input type="text" id="price" placeholder="Enter price">
+                    <button onclick="addPrice(this)">Add Price</button>
+                </div>
             `;
+            if (item.price!=0) {
+                addPrice(this);
+            }
             listItems.appendChild(listItem);
         });
     }
@@ -70,7 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function addPrice(button) {
-        const newPrice = newPrice.value.trim();
+        const newPrice = document.getElementById("price").value.trim();
 
         if (newPrice && newPrice/1 == newPrice) {
             const listItem = button.parentNode;
