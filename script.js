@@ -2,6 +2,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const listItems = document.getElementById("list-items");
     const newItemInput = document.getElementById("new-item");
     const userInput = document.getElementById("user");
+    const i = [];
+    const users = {};
+    const prices = {};
 
     loadStoredItems();
 
@@ -9,30 +12,34 @@ document.addEventListener("DOMContentLoaded", () => {
         const storedItems = JSON.parse(localStorage.getItem("groceryItems")) || [];
 
         storedItems.forEach(item => {
+            i.push(item.name);
+            users[item.name] = item.user.split(' ');
+            prices[item.name] = item.price;
             const listItem = document.createElement("li");
+            const u = users[item.name];
             if (item.price!=0) {
                 listItem.innerHTML = `
                 <div class="container-2" data-testid="container-2">
                     <div><b>${item.name}</b></div>
-                    <div class="container-3" data-testid="container-3">
-                        <div>${item.user}</div>
+                    <div class="container-3" data-testid="${item.name}">
+                        <div>${u.map(user => `<div>${user}</div>`).join('')}</div>
                         <button onclick="markItem(this)">Mark</button>
                     </div>
                 </div>
                 <div id="add-price">
-                    <div>$ ${newPrice}</div>
+                    <div>$ ${item.price}</div>
                 </div>
             `;
             } else {
                 listItem.innerHTML = `
                 <div class="container-2" data-testid="container-2">
                     <div><b>${item.name}</b></div>
-                    <div class="container-3" data-testid="container-3">
-                        <div>${item.user}</div>
+                    <div class="container-3" data-testid="${item.name}">
+                        <div>${u.map(user => `<div>${user}</div>`).join('')}</div>
                         <button onclick="markItem(this)">Mark</button>
                     </div>
                 </div>
-                <div id="add-price">
+                <div id="add-price"  data-item-id="${item.name}">
                     <input type="text" id="price" placeholder="Enter price">
                     <button onclick="addPrice(this)">Add Price</button>
                 </div>
@@ -45,10 +52,10 @@ document.addEventListener("DOMContentLoaded", () => {
     function saveToLocalStorage() {
         const items = [];
 
-        listItems.childNodes.forEach(item => {
-            const n = item.childNodes[1].textContent.split(" ");
-
-            items.push({ name: n[0], user: n[1, len(n)-2].join(" ") });
+        i.forEach(n => {
+            const u = users[n].join(' ');
+            const p = prices[n]
+            items.push({ name: n, user: u, price: p });
         });
 
         localStorage.setItem("groceryItems", JSON.stringify(items));
@@ -68,32 +75,44 @@ document.addEventListener("DOMContentLoaded", () => {
             listItem.innerHTML = `
                 <div class="container-2" data-testid="container-2">
                     <div><b>${newItemText}</b></div>
-                    <div class="container-3" data-testid="container-3">
+                    <div class="container-3" data-testid="${newItemText}">
                         <div>${userName}</div>
                         <button onclick="markItem(this)">Mark</button>
                     </div>
                 </div>
-                <div id="add-price">
+                <div id="add-price"  data-item-id="${newItemText}">
                     <input type="text" id="price" placeholder="Enter price">
                     <button onclick="addPrice(this)">Add Price</button>
                 </div>
             `;
             listItems.appendChild(listItem);
 
-            saveToLocalStorage();
+            i.push(newItemText);
+            users[newItemText] = [userName];
+            prices[newItemText] = 0;
 
             // Clear input fields
             newItemInput.value = "";
             userInput.value = "";
+
+            saveToLocalStorage();
         }
     }
 
     function addPrice(button) {
-        const newPrice = document.getElementById("price").value.trim();
+        const newPrice = parseFloat(document.getElementById("price").value.trim());
 
-        if (newPrice && newPrice/1 == newPrice) {
+        if (!isNaN(newPrice) && newPrice > 0) {
             const listItem = button.parentNode;
+
+            var itemContainer = button.closest('[data-item-id]');
+            var itemId = itemContainer.getAttribute('data-item-id');
+            
             listItem.innerHTML = `<div>$ ${newPrice}</div>`;
+
+            prices[itemId] = newPrice;
+
+            saveToLocalStorage();
 
             // Clear input fields
             newPrice.value = "";
@@ -107,12 +126,45 @@ document.addEventListener("DOMContentLoaded", () => {
         const markedUser = prompt("Enter your name to mark:");
 
         if (markedUser) {
-            listItem.innerHTML = `<div>${markedUser}</div>` + listItem.innerHTML;
+            var itemContainer = button.closest('[data-testid]');
+            var itemId = itemContainer.getAttribute('data-testid');
+
+            users[itemId].push(markedUser);
+
+            const u = users[itemId];
+
+            listItem.innerHTML = `
+                <div>${u.map(user => `<div>${user}</div>`).join('')}</div>
+                <button onclick="markItem(this)">Mark</button>
+            `;
+
+            saveToLocalStorage();
         }
     }
 
     function calculate(button) {
-        
+        const listItem = button.parentNode;
+        const buyer = prompt("Enter the name of the Buyer:");
+        if (buyer) {
+            listItem.innerHTML += `<div>Payment to ${buyer}: </div>`;
+
+            const payment = {};
+
+            i.forEach(n => {
+                const p = prices[n]/users[n].length;
+                users[n].forEach(u => {
+                    if (!payment[u]) {
+                        payment[u] = 0;
+                    }
+                    payment[u] += p;
+                })
+            });
+
+            Object.entries(payment).forEach(([key, value]) => {
+                listItem.innerHTML += `<div>Name: ${key}, Value: ${value}</div>`;
+            });
+
+        } 
     }
 
     window.addItem = addItem;
