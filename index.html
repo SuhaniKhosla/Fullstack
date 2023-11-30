@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grocery List</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <h1>Grocery List</h1>
+        <div id="grocery-list">
+            <ul id="list-items"></ul>
+            <div class="container-1" data-testid="container-1">
+                <div id="add-item">
+                    <input type="text" id="new-item" placeholder="Enter item">
+                    <input type="text" id="user" placeholder="Your name">
+                    <button onclick="addItem()">Add Item</button>
+                </div>
+            </div>
+        </div>
+        <button id="freeze-button" onclick="freezeList()">Freeze List</button>
+    </div>
+    <button onclick="clearLocalStorage()">Clear Local Storage</button>
+    <script src="script.js"></script>
+</body>
+</html>
