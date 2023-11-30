@@ -2,6 +2,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const listItems = document.getElementById("list-items");
     const newItemInput = document.getElementById("new-item");
     const userInput = document.getElementById("user");
+    const items = [];
+    const names = [];
+    const prices = [];
 
     loadStoredItems();
 
