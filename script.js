@@ -13,7 +13,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
         storedItems.forEach(item => {
             const listItem = document.createElement("li");
-            listItem.innerHTML = `
+            if (item.price!=0) {
+                listItem.innerHTML = `
+                <div class="container-2" data-testid="container-2">
+                    <div><b>${item.name}</b></div>
+                    <div class="container-3" data-testid="container-3">
+                        <div>${item.user}</div>
+                        <button onclick="markItem(this)">Mark</button>
+                    </div>
+                </div>
+                <div id="add-price">
+                    <div>$ ${newPrice}</div>
+                </div>
+            `;
+            } else {
+                listItem.innerHTML = `
                 <div class="container-2" data-testid="container-2">
                     <div><b>${item.name}</b></div>
                     <div class="container-3" data-testid="container-3">
@@ -26,8 +40,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     <button onclick="addPrice(this)">Add Price</button>
                 </div>
             `;
-            if (item.price!=0) {
-                addPrice(this);
             }
             listItems.appendChild(listItem);
         });
@@ -104,8 +116,13 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    function calculate(button) {
+        
+    }
+
     window.addItem = addItem;
     window.addPrice = addPrice;
     window.markItem = markItem;
+    window.calculate = calculate;
     window.clearLocalStorage = clearLocalStorage;
 });
