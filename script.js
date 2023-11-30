@@ -2,9 +2,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const listItems = document.getElementById("list-items");
     const newItemInput = document.getElementById("new-item");
     const userInput = document.getElementById("user");
-    const items = [];
-    const names = [];
-    const prices = [];
 
     loadStoredItems();
 
@@ -49,11 +46,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const items = [];
 
         listItems.childNodes.forEach(item => {
-            const itemName = item.childNodes[0].textContent;
-            const userName = item.childNodes[1].textContent;
-            const price = item.childNodes[2].textContent.replace(/\D/g, ""); // Extract numeric price
+            const n = item.childNodes[1].textContent.split(" ");
 
-            items.push({ name: itemName, user: userName, price: price });
+            items.push({ name: n[0], user: n[1, len(n)-2].join(" ") });
         });
 
         localStorage.setItem("groceryItems", JSON.stringify(items));
